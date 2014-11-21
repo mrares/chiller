@@ -1,37 +1,19 @@
-
-intake_material_thickness=2;
-intake_diameter=120;
-intake_length=100;
-
-outake_diameter=60;
-outake_length=100;
-
-fan_diameter_inner = 125;
-fan_diameter_outer = 250;
-fan_base_thickness = 15;
-fan_blades = 36;
-fan_blade_thickness = 4;
-fan_height = 50;
-
-box_size = 300;
-
-
-
+include <constants.scad>
 
 module intake_assembly() {
-	box_height = intake_material_thickness + fan_base_thickness + fan_height + 10;
+	box_height = intake_material_thickness + max(fan_base_thickness+fan_height, intake_port2_diameter) + 10;
 
 	module intake_box() {
-		translate([-box_size/2,-box_size/2,0]) {
+		translate([-intake_box_size/2,-intake_box_size/2,0]) {
 			difference() {
-				cube([box_size,box_size,box_height]);
+				cube([intake_box_size,intake_box_size,box_height]);
 				translate([
-					intake_material_thickness, 
-					intake_material_thickness, 
+					intake_material_thickness,
+					intake_material_thickness,
 					intake_material_thickness])
 				cube([
-					box_size-intake_material_thickness*2,
-					box_size-intake_material_thickness*2,
+					intake_box_size-intake_material_thickness*2,
+					intake_box_size-intake_material_thickness*2,
 					box_height-intake_material_thickness]);
 			}
 		}
@@ -40,14 +22,14 @@ module intake_assembly() {
 	module intake_port() {
 		translate([0,0, box_height])
 		difference() {
-			cylinder(h=intake_length, d=intake_diameter);
+			cylinder(h=intake_port1_length, d=intake_port1_diameter);
 			cylinder(
-				h=intake_length, 
-				d=intake_diameter-intake_material_thickness*2
+				h=intake_port1_length,
+				d=intake_port1_diameter-intake_material_thickness*2
 			);
 		}
 	}
-	
+
 	module intake_fan() {
 		module fan_blade() {
 			translate([fan_diameter_inner/2, -fan_blade_thickness/2, 0])
@@ -73,26 +55,25 @@ module intake_assembly() {
 	}
 
 	module output_port() {
-		translate([box_size/2,0,(box_height)/2]) {
+		translate([intake_box_size/2,0,(box_height)/2]) {
 			rotate([0,90,0])
 			difference() {
 			cylinder(
-				h=outake_length,
-				d=outake_diameter
+				h=intake_port2_length,
+				d=intake_port2_diameter
 			);
 			cylinder(
-				h=outake_length,
-				d=outake_diameter - intake_material_thickness/2
+				h=intake_port2_length,
+				d=intake_port2_diameter - intake_material_thickness/2
 			);
 			}
-			
+
 		}
 	}
 
 	intake_box();
+	output_port();
 	intake_port();
 	intake_fan();
-	output_port();
-}
 
-intake_assembly();
+}
